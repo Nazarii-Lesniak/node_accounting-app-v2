@@ -156,6 +156,12 @@ function createServer() {
       return;
     }
 
+    if (request.body.userId !== undefined) {
+      response.status(400).json({ error: 'UserId cannot be updated' });
+
+      return;
+    }
+
     delete request.body.id;
     Object.assign(expenseToUpdate, request.body);
     response.status(200).json(expenseToUpdate);
