@@ -55,6 +55,7 @@ function createServer() {
       return;
     }
 
+    delete request.body.id;
     Object.assign(userToUpdate, request.body);
     response.status(200).json(userToUpdate);
   });
@@ -75,7 +76,14 @@ function createServer() {
   app.post('/expenses', (request, response) => {
     const { userId, spentAt, title, amount, category, note } = request.body;
 
-    if (!userId || !spentAt || !title || !amount || !category || !note) {
+    if (
+      !userId ||
+      !spentAt ||
+      !title ||
+      !category ||
+      !note ||
+      amount === undefined
+    ) {
       response.status(400).json({ error: 'All fields are required' });
 
       return;
@@ -103,9 +111,13 @@ function createServer() {
     }
 
     if (categories) {
-      filteredExpenses = filteredExpenses.filter(
-        (expense) => expense.category === categories,
-      );
+      const categoriesArray = Array.isArray(categories)
+        ? categories
+        : [categories];
+
+      filteredExpenses = filteredExpenses.filter((expense) => {
+        return categoriesArray.includes(expense.category);
+      });
     }
 
     if (from && to) {
@@ -144,6 +156,7 @@ function createServer() {
       return;
     }
 
+    delete request.body.id;
     Object.assign(expenseToUpdate, request.body);
     response.status(200).json(expenseToUpdate);
   });
